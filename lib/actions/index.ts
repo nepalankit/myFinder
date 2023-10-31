@@ -1,16 +1,17 @@
-"use server"
+"use server";
 
+import { connectToDB } from "../mongoose";
 import { scrapeAmazonProduct } from "../scraper";
 
-export async function scrapeAndStoreProduct(productUrl:string){
+export async function scrapeAndStoreProduct(productUrl: string) {
+  if (!productUrl) return;
 
-    if(!productUrl) return;
+  try {
+    connectToDB();
+    const scrapedProduct = await scrapeAmazonProduct(productUrl);
 
-    try{
-const scrapedProduct=await scrapeAmazonProduct(productUrl);
-
-    }
-    catch(error:any){
-        throw new Error(`Failed to create/update product :${error.message}`)
-    }
+    if (!scrapedProduct) return;
+  } catch (error: any) {
+    throw new Error(`Failed to create/update product :${error.message}`);
+  }
 }
